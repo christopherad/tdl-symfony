@@ -18,5 +18,5 @@ jobs:
                 php-version: '8.1'
                 extensions: imagick, swoole
             - name: "Install PHP deps"
-              run: composer install
+              run: composer install --prefer-dist --no-interaction --no-progress
         
