@@ -1,0 +1,35 @@
+name: "CI Basics"
+
+on:
+    push: ~
+    workflow_dispatch: ~
+
+jobs:
+    hello:
+        name: "Hello world"
+        runs-on: "ubuntu-latest"
+        steps:
+            - name: "Hello"
+              run: "echo 'Hello world!'"
+    
+    hello2:
+        name: "Hello world 2"
+        runs-on: "ubuntu-latest"
+        continue-on-error: true
+        steps:
+        - name: "Say Hello again"
+          run: |
+            echo "Hello world"
+            echo "Hello world"
+            exit 1
+        - name: "Say Coucou"
+          run: echo "Coucou"
+        
+    hello3:
+        needs: ["hello", "hello2"]
+        name: "Hello world 3"
+        runs-on: "ubuntu-latest"
+        steps:
+            - name: "Hello"
+              run: "echo 'Hello world 3!'"
+  

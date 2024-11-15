@@ -1,0 +1,39 @@
+name: "CI"
+
+on:
+    push:
+        paths-ignore: "./basics.yml"
+    workflow_dispatch:
+
+jobs:
+    deps:
+        name: "Install dependencies"
+        runs-on: "ubuntu-latest"
+        services:
+            database:
+                image: mysql
+                env: 
+                    MYSQL_ROOT_PASSWORD: password
+                    MYSQL_DATABASE: app
+                    MYSQL_ROOT_HOST: "%"
+                ports:
+                    - 3306:3306
+        steps:
+            - uses: actions/checkout@v4
+            - run: ls
+            - name: "Setup PHP with tools"
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: '8.1'
+                extensions: imagick, swoole
+            - run: |
+                export APP_ENV=test
+                composer install --prefer-dist --no-interaction --no-progress
+            - name: "Check Database healthy"
+              run: nc -vz 127.0.0.1 3306
+            - name: "Start migrations"
+              run: php bin/console d:m:m
+              env:
+                DATABASE_HOST: 127.0.0.1
+                DATABASE_PASSWORD: password
+                DATABASE_NAME: app
